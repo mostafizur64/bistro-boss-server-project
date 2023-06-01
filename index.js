@@ -126,10 +126,30 @@ async function run() {
 
     })
 
-
     // menu related apis
     app.get('/menu', async (req, res) => {
       const result = await menuCollections.find().toArray();
+      res.send(result);
+    });
+  
+    //menu post 
+    app.post('/menu',verifyJWT,verifyAdmin, async(req,res)=>{
+      const newItem = req.body;
+      const result = await menuCollections.insertOne(newItem);
+      res.send(result)
+    });
+    
+    // app.delete('/menu/:id',verifyJWT,verifyAdmin, async(req,res)=>{
+    //   const id = req.params.id;
+    //   const query = {_id: new ObjectId(id)};
+    //   const result = await menuCollections.deleteOne(query);
+    //   res.send(result);
+      
+    // })
+       app.delete('/menu/:id',verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await menuCollections.deleteOne(query);
       res.send(result);
     })
 
@@ -150,7 +170,7 @@ async function run() {
 
       const decodedEmail = req.decoded.email;
       if (email !== decodedEmail) {
-        return res.status(403).send({ error: true, message: 'porviden access' })
+        return res.status(403).send({ error: true, message: 'Forbidden access' })
       }
 
       const query = { email: email };
